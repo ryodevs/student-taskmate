@@ -17,9 +17,13 @@ export type DeadlineStatus = 'overdue' | 'today' | 'soon' | 'ok';
 
 export function deadlineStatus(iso: string): DeadlineStatus {
   const ms = msUntil(iso);
+
   if (ms < 0) return 'overdue';
+
   if (ms <= DAY) return 'today';
+
   if (ms <= 3 * DAY) return 'soon';
+
   return 'ok';
 }
 
@@ -33,6 +37,7 @@ export function findConflicts(
 ): Task[] {
   const target = new Date(deadlineISO).getTime();
   const range = windowDays * DAY;
+
   return tasks.filter(
     (t) =>
       t.id !== excludeId &&

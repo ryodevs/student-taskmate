@@ -34,6 +34,7 @@ export default function FileConverter() {
     setBusy(true);
     setError('');
     setDone('');
+
     try {
       if (category === 'image') {
         const blob = await convertImage(file, target);

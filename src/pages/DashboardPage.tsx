@@ -9,9 +9,11 @@ import { createClassroom, joinClassroom, listForUser } from '../lib/classes';
 export default function DashboardPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
+
   const [classrooms, setClassrooms] = useState<Classroom[]>(() =>
     listForUser(user!.id)
   );
+
   const [joinCode, setJoinCode] = useState('');
   const [error, setError] = useState('');
   const [showCreate, setShowCreate] = useState(false);
@@ -24,6 +26,7 @@ export default function DashboardPage() {
   const handleJoin = (e: FormEvent) => {
     e.preventDefault();
     setError('');
+
     try {
       const cls = joinClassroom(user!.id, joinCode);
       setJoinCode('');
@@ -37,10 +40,13 @@ export default function DashboardPage() {
   const handleCreate = (e: FormEvent) => {
     e.preventDefault();
     setError('');
+
     if (!isPengurus) {
       setError('Hanya akun Pengurus yang bisa membuat ruang kelas.');
+
       return;
     }
+
     const cls = createClassroom(user!.id, name, desc);
     setShowCreate(false);
     setName('');
@@ -53,7 +59,7 @@ export default function DashboardPage() {
     <main className="container">
       <div className="page-head">
         <div>
-          <h2>Halo, {user!.name} 👋</h2>
+          <h2>Halo, {user!.name}</h2>
           <p className="muted">Kelola tugasmu di semua ruang kelas.</p>
         </div>
         {isPengurus && (

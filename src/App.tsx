@@ -16,14 +16,17 @@ function RequireAuth({ children }: { children: ReactElement }) {
   if (loading) {
     return <div className="page-center muted">Memuat…</div>;
   }
+
   if (!user) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
+
   return children;
 }
 
 function AppShell() {
   const { user } = useAuth();
+
   return (
     <>
       {user && <Navbar />}

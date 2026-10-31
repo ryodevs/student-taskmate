@@ -15,12 +15,16 @@ function tokenize(s: string): string[] {
 
 export function summarize(text: string, ratio = 0.3): string {
   const clean = text.trim();
+
   if (!clean) return '';
+
   const sentences =
     clean.match(/[^.!?\n]+[.!?]?/g)?.map((s) => s.trim()).filter(Boolean) ?? [];
+
   if (sentences.length <= 3) return clean;
 
   const freq = new Map<string, number>();
+
   for (const s of sentences) {
     for (const w of tokenize(s)) {
       if (!STOPWORDS.has(w) && w.length > 2) {
@@ -31,13 +35,16 @@ export function summarize(text: string, ratio = 0.3): string {
 
   const scored = sentences.map((s, i) => {
     const words = tokenize(s).filter((w) => !STOPWORDS.has(w));
+
     const score =
       words.reduce((sum, w) => sum + (freq.get(w) ?? 0), 0) /
       Math.sqrt(words.length || 1);
+
     return { i, score };
   });
 
   const count = Math.max(1, Math.ceil(sentences.length * ratio));
+
   const top = [...scored]
     .sort((a, b) => b.score - a.score)
     .slice(0, count)

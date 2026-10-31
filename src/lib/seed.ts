@@ -4,6 +4,7 @@ import { StoredUser, Classroom, Task } from '../types';
 // Data demo yang dibuat sekali saat pertama kali aplikasi dibuka.
 export function seedDemo(): void {
   const users = load<StoredUser[]>('taskmate:users', []);
+
   if (users.length > 0) return;
 
   const now = Date.now();
@@ -29,6 +30,7 @@ export function seedDemo(): void {
       passwordHash: 'd3ad9315b7be5dd53b31a273b3b3aba5defe700808305aa16a3062b76658a791',
     },
   ];
+
   save('taskmate:users', demoUsers);
 
   const cls: Classroom = {
@@ -40,6 +42,7 @@ export function seedDemo(): void {
     inviteCode: 'KELAS1',
     createdAt: now,
   };
+
   save('taskmate:classrooms', [cls]);
 
   const tasks: Task[] = [
@@ -64,5 +67,6 @@ export function seedDemo(): void {
       completedBy: [],
     },
   ];
+
   save('taskmate:tasks', tasks);
 }

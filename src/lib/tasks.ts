@@ -19,6 +19,7 @@ export function addTask(
   createdBy: string
 ): Task {
   const list = getAll();
+
   const task: Task = {
     id: uid(),
     classroomId,
@@ -29,8 +30,10 @@ export function addTask(
     createdAt: Date.now(),
     completedBy: [],
   };
+
   list.push(task);
   setAll(list);
+
   return task;
 }
 
@@ -43,6 +46,7 @@ export function listByClassroom(classroomId: string): Task[] {
 export function toggleComplete(taskId: string, userId: string): void {
   const list = getAll();
   const task = list.find((t) => t.id === taskId);
+
   if (!task) return;
   task.completedBy = task.completedBy.includes(userId)
     ? task.completedBy.filter((id) => id !== userId)
@@ -53,9 +57,12 @@ export function toggleComplete(taskId: string, userId: string): void {
 export function deleteTask(taskId: string, requesterId: string): void {
   const list = getAll();
   const task = list.find((t) => t.id === taskId);
+
   if (!task) return;
+
   if (task.createdBy !== requesterId) {
     throw new Error('Hanya pembuat tugas yang bisa menghapus.');
   }
+
   setAll(list.filter((t) => t.id !== taskId));
 }

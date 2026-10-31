@@ -26,6 +26,7 @@ export default function LoginPage() {
     e.preventDefault();
     setBusy(true);
     setError('');
+
     try {
       await login(email, password);
       navigate('/');
@@ -40,6 +41,7 @@ export default function LoginPage() {
     e.preventDefault();
     setBusy(true);
     setError('');
+
     try {
       await googleLogin(gName, gEmail, gRole);
       setGoogleOpen(false);
@@ -54,7 +56,7 @@ export default function LoginPage() {
   return (
     <div className="auth-layout">
       <div className="auth-card card">
-        <h1>✅ TaskMate</h1>
+        <h1>TaskMate</h1>
         <p className="muted">Pengelola tugas mahasiswa. Masuk untuk melanjutkan.</p>
         {error && <div className="alert alert-error">{error}</div>}
         <form onSubmit={handleSubmit}>
@@ -83,7 +85,7 @@ export default function LoginPage() {
           </button>
         </form>
         <button className="btn btn-google btn-block" onClick={() => setGoogleOpen(true)}>
-          🔵 Masuk dengan Google
+          Masuk dengan Google
         </button>
         <p className="muted small">
           Belum punya akun? <Link to="/register">Daftar</Link>
@@ -121,7 +123,13 @@ export default function LoginPage() {
             </div>
             <div className="form-group">
               <label>Peran (khusus akun baru)</label>
-              <select value={gRole} onChange={(e) => setGRole(e.target.value as Role)}>
+              <select
+                value={gRole}
+                onChange={(e) => {
+                  // SAFETY: select only contains valid Role values.
+                  setGRole(e.target.value as Role);
+                }}
+              >
                 <option value="anggota">Anggota</option>
                 <option value="pengurus">Pengurus</option>
               </select>

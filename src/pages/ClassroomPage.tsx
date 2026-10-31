@@ -38,6 +38,7 @@ export default function ClassroomPage() {
       </main>
     );
   }
+
   if (!cls || !user || !cls.memberIds.includes(user.id)) {
     return <Navigate to="/" replace />;
   }
@@ -49,10 +50,13 @@ export default function ClassroomPage() {
   const handleAdd = (e: FormEvent) => {
     e.preventDefault();
     setError('');
+
     if (!deadline) {
       setError('Deadline wajib diisi.');
+
       return;
     }
+
     addTask(cls.id, title, desc, new Date(deadline).toISOString(), user.id);
     setTasks(listByClassroom(cls.id));
     setTitle('');
@@ -82,7 +86,7 @@ export default function ClassroomPage() {
         <div className="invite-box">
           <code>{cls.inviteCode}</code>
           <button className="btn btn-ghost btn-sm" onClick={copyLink}>
-            {copied ? 'Tersalin ✓' : 'Salin link undangan'}
+            {copied ? 'Tersalin' : 'Salin link undangan'}
           </button>
         </div>
       </div>
@@ -122,7 +126,7 @@ export default function ClassroomPage() {
           />
           {conflicts.length > 0 && (
             <div className="alert alert-warn">
-              ⚠ Deadline ini bentrok dengan:{' '}
+              Deadline ini bentrok dengan:{' '}
               <strong>{conflicts.map((t) => t.title).join(', ')}</strong>.
               Pertimbangkan mengubah tanggalnya.
             </div>

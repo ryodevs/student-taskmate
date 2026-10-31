@@ -14,9 +14,11 @@ function setAll(list: Classroom[]): void {
 function generateCode(): string {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   let code = '';
+
   for (let i = 0; i < 6; i++) {
     code += chars[Math.floor(Math.random() * chars.length)];
   }
+
   return code;
 }
 
@@ -27,9 +29,11 @@ export function createClassroom(
 ): Classroom {
   const list = getAll();
   let code = generateCode();
+
   while (list.some((c) => c.inviteCode === code)) {
     code = generateCode();
   }
+
   const cls: Classroom = {
     id: uid(),
     name: name.trim(),
@@ -39,8 +43,10 @@ export function createClassroom(
     inviteCode: code,
     createdAt: Date.now(),
   };
+
   list.push(cls);
   setAll(list);
+
   return cls;
 }
 
@@ -52,14 +58,18 @@ export function joinClassroom(userId: string, code: string): Classroom {
   const list = getAll();
   const normalized = code.trim().toUpperCase();
   const cls = list.find((c) => c.inviteCode === normalized);
+
   if (!cls) {
     throw new Error('Kode ruang kelas tidak ditemukan.');
   }
+
   if (cls.memberIds.includes(userId)) {
     throw new Error('Kamu sudah tergabung di ruang kelas ini.');
   }
+
   cls.memberIds.push(userId);
   setAll(list);
+
   return cls;
 }
 

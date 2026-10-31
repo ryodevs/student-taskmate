@@ -8,6 +8,7 @@ interface Props {
 
 export default function ClassroomCard({ classroom, userId }: Props) {
   const isOwner = classroom.ownerId === userId;
+
   return (
     <Link to={`/classroom/${classroom.id}`} className="card card-link">
       <div className="card-top">

@@ -22,15 +22,21 @@ export default function RegisterPage() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError('');
+
     if (password.length < 6) {
       setError('Password minimal 6 karakter.');
+
       return;
     }
+
     if (password !== confirm) {
       setError('Konfirmasi password tidak cocok.');
+
       return;
     }
+
     setBusy(true);
+
     try {
       await register(name, email, password, role);
       navigate('/');
@@ -93,7 +99,7 @@ export default function RegisterPage() {
                 checked={role === 'pengurus'}
                 onChange={() => setRole('pengurus')}
               />
-              <strong>👑 Pengurus</strong>
+              <strong>Pengurus</strong>
               <span className="muted small">Buat ruang kelas &amp; tambah tugas</span>
             </label>
             <label className={`role-option ${role === 'anggota' ? 'active' : ''}`}>
@@ -103,7 +109,7 @@ export default function RegisterPage() {
                 checked={role === 'anggota'}
                 onChange={() => setRole('anggota')}
               />
-              <strong>🎓 Anggota</strong>
+              <strong>Anggota</strong>
               <span className="muted small">Gabung kelas &amp; ceklis tugas</span>
             </label>
           </div>

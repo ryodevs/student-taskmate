@@ -46,7 +46,7 @@ export default function Summarizer() {
           onClick={() => setResult(summarize(text, ratio))}
           disabled={!text.trim()}
         >
-          Ringkas ✨
+          Ringkas
         </button>
       </div>
       {result && (
@@ -54,7 +54,7 @@ export default function Summarizer() {
           <div className="result-head">
             <strong>Hasil ringkasan</strong>
             <button className="btn btn-ghost btn-sm" onClick={handleCopy}>
-              {copied ? 'Tersalin ✓' : 'Salin'}
+              {copied ? 'Tersalin' : 'Salin'}
             </button>
           </div>
           <p>{result}</p>

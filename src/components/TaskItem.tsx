@@ -1,12 +1,12 @@
 import { Task } from '../types';
 import { deadlineStatus, findConflicts, formatDeadline } from '../lib/deadline';
 
-const STATUS_LABEL: Record<string, string> = {
+const STATUS_LABEL = {
   overdue: 'Terlambat',
   today: 'Hari ini',
   soon: '≤ 3 hari',
   ok: 'Aman',
-};
+} as const;
 
 interface Props {
   task: Task;
@@ -46,7 +46,7 @@ export default function TaskItem({
             className="badge badge-warn"
             title={conflicts.map((c) => c.title).join(', ')}
           >
-            ⚠ Bentrok dengan {conflicts.length} tugas
+            Bentrok dengan {conflicts.length} tugas
           </span>
         )}
         {canManage && (

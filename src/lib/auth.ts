@@ -29,6 +29,7 @@ function strip(u: StoredUser): User {
 
 async function hash(text: string): Promise<string> {
   const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+
   return Array.from(new Uint8Array(buf))
     .map((b) => b.toString(16).padStart(2, '0'))
     .join('');
@@ -42,9 +43,11 @@ export async function register(
 ): Promise<User> {
   const users = getUsers();
   const normalized = email.trim().toLowerCase();
+
   if (users.some((u) => u.email === normalized)) {
     throw new Error('Email sudah terdaftar. Silakan masuk.');
   }
+
   const user: StoredUser = {
     id: uid(),
     name: name.trim(),
@@ -54,9 +57,11 @@ export async function register(
     createdAt: Date.now(),
     passwordHash: await hash(password),
   };
+
   users.push(user);
   setUsers(users);
   setSession(user.id);
+
   return strip(user);
 }
 
@@ -64,14 +69,19 @@ export async function loginEmail(email: string, password: string): Promise<User>
   const users = getUsers();
   const normalized = email.trim().toLowerCase();
   const found = users.find((u) => u.email === normalized);
+
   if (!found || !found.passwordHash) {
     throw new Error('Email atau password salah.');
   }
+
   const hashed = await hash(password);
+
   if (hashed !== found.passwordHash) {
     throw new Error('Email atau password salah.');
   }
+
   setSession(found.id);
+
   return strip(found);
 }
 
@@ -85,6 +95,7 @@ export async function loginGoogle(
   const users = getUsers();
   const normalized = email.trim().toLowerCase();
   let found = users.find((u) => u.email === normalized);
+
   if (!found) {
     found = {
       id: uid(),
@@ -97,14 +108,18 @@ export async function loginGoogle(
     users.push(found);
     setUsers(users);
   }
+
   setSession(found.id);
+
   return strip(found);
 }
 
 export function getCurrentUser(): User | null {
   const session = load<{ userId: string } | null>(SESSION_KEY, null);
+
   if (!session) return null;
   const found = getUsers().find((u) => u.id === session.userId);
+
   return found ? strip(found) : null;
 }
 

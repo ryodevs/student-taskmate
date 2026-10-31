@@ -1,128 +1,88 @@
-import { load, save, uid } from './storage';
-import { StoredUser, User, Role } from '../types';
+import { createClient } from '@supabase/supabase-js';
+import type { User } from '../types';
 
-const USERS_KEY = 'taskmate:users';
-const SESSION_KEY = 'taskmate:session';
+// Inisialisasi klien Supabase dari env yang sudah di-set di Vercel/.env.local
+const supa = createClient(
+  process.env.VITE_SUPABASE_URL!,
+  process.env.VITE_SUPABASE_ANON_KEY!
+);
 
-function getUsers(): StoredUser[] {
-  return load<StoredUser[]>(USERS_KEY, []);
-}
-
-function setUsers(users: StoredUser[]): void {
-  save(USERS_KEY, users);
-}
-
-function setSession(userId: string): void {
-  save(SESSION_KEY, { userId });
-}
-
-function strip(u: StoredUser): User {
-  return {
-    id: u.id,
-    name: u.name,
-    email: u.email,
-    role: u.role,
-    provider: u.provider,
-    createdAt: u.createdAt,
-  };
-}
-
-async function hash(text: string): Promise<string> {
-  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
-
-  return Array.from(new Uint8Array(buf))
-    .map((b) => b.toString(16).padStart(2, '0'))
-    .join('');
-}
-
+// --- 1. register dengan email & password ---
 export async function register(
   name: string,
   email: string,
   password: string,
-  role: Role
+  role: 'pengurus' | 'anggota'
 ): Promise<User> {
-  const users = getUsers();
-  const normalized = email.trim().toLowerCase();
-
-  if (users.some((u) => u.email === normalized)) {
-    throw new Error('Email sudah terdaftar. Silakan masuk.');
+  const { data, error } = await supa.auth.signUp({ email, password });
+  if (error) throw error;
+  if (data.user) {
+    try {
+      await supa.rpc('upsert_user_profile', {
+        p_user_id: data.user.id,
+        p_name: name,
+        p_role: role,
+      });
+    } catch (_e) {
+      // RPC opsional; registrasi tetap sukses
+    }
   }
-
-  const user: StoredUser = {
-    id: uid(),
+  return {
+    id: data.user!.id,
     name: name.trim(),
-    email: normalized,
+    email: data.user!.email!.trim().toLowerCase(),
     role,
-    provider: 'email',
+    provider: 'email' as const,
     createdAt: Date.now(),
-    passwordHash: await hash(password),
-  };
-
-  users.push(user);
-  setUsers(users);
-  setSession(user.id);
-
-  return strip(user);
+  } as User;
 }
 
+// --- 2. login email ---
 export async function loginEmail(email: string, password: string): Promise<User> {
-  const users = getUsers();
-  const normalized = email.trim().toLowerCase();
-  const found = users.find((u) => u.email === normalized);
-
-  if (!found || !found.passwordHash) {
-    throw new Error('Email atau password salah.');
-  }
-
-  const hashed = await hash(password);
-
-  if (hashed !== found.passwordHash) {
-    throw new Error('Email atau password salah.');
-  }
-
-  setSession(found.id);
-
-  return strip(found);
+  const { data, error } = await supa.auth.signInWithPassword({ email, password });
+  if (error) throw error;
+  const user = data.user!;
+  return {
+    id: user.id,
+    name: user.user_metadata?.full_name || user.email!.split('@')[0],
+    email: user.email!,
+    role: user.user_metadata?.role || 'anggota',
+    provider: 'email' as const,
+    createdAt: user.user_metadata?.createdAt ?? Date.now(),
+  } as User;
 }
 
-// Simulasi Google OAuth untuk demo (client-side).
-// PRODUKSI: ganti dengan Firebase Auth / Supabase Auth — lihat README.md.
+// --- 3. login Google (OAuth) ---
 export async function loginGoogle(
-  name: string,
-  email: string,
-  role: Role = 'anggota'
-): Promise<User> {
-  const users = getUsers();
-  const normalized = email.trim().toLowerCase();
-  let found = users.find((u) => u.email === normalized);
-
-  if (!found) {
-    found = {
-      id: uid(),
-      name: name.trim(),
-      email: normalized,
-      role,
-      provider: 'google',
-      createdAt: Date.now(),
-    };
-    users.push(found);
-    setUsers(users);
-  }
-
-  setSession(found.id);
-
-  return strip(found);
+  _name: string,
+  _email: string,
+  _role: 'pengurus' | 'anggota' = 'anggota'
+): Promise<User | null> {
+  const { error } = await supa.auth.signInWithOAuth({
+    provider: 'google',
+    options: { redirectTo: window.location.origin + '/auth/callback' },
+  });
+  if (error) throw error;
+  return null;
 }
 
+// --- 4. getCurrentUser ---
 export function getCurrentUser(): User | null {
-  const session = load<{ userId: string } | null>(SESSION_KEY, null);
-
-  if (!session) return null;
-  const found = getUsers().find((u) => u.id === session.userId);
-
-  return found ? strip(found) : null;
+  const session: any = supa.auth.getSession();
+  if (!session?.data?.session) return null;
+  const user: any = session.data.user;
+  if (!user) return null;
+  return {
+    id: user.id,
+    name: user.user_metadata?.full_name || user.email!.split('@')[0],
+    email: user.email!,
+    role: user.user_metadata?.role || 'anggota',
+    provider: 'google' as const,
+    createdAt: user.user_metadata?.createdAt ?? Date.now(),
+  } as User;
 }
 
+// --- 5. logout ---
 export function logout(): void {
-  localStorage.removeItem(SESSION_KEY);
+  supa.auth.signOut();
 }

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pilih peran</title>
+<link rel="stylesheet" href="/src/style.css">
+</head>
+<body>
+<main class="wide" id="app" hidden>
+  <h1>Pilih peran</h1>
+  <p class="sub">Peran menentukan apa yang bisa kamu lakukan di kelas.</p>
+
+  <div class="roles">
+    <button class="role" type="button" data-role="pengurus">
+      <strong>Pengurus</strong>
+      <small>Anda akan menjadi pengurus kelas dan menambah tugas</small>
+    </button>
+    <button class="role" type="button" data-role="anggota">
+      <strong>Anggota</strong>
+      <small>Anda akan menjadi anggota kelas dan melihat tugas</small>
+    </button>
+  </div>
+
+  <p class="msg" id="msg" role="alert"></p>
+  <p class="who">Masuk sebagai <span id="who"></span></p>
+  <button class="link" id="logout" type="button">Ganti akun</button>
+</main>
+<script type="module" src="/src/role.js"></script>
+</body>
+</html>

@@ -113,12 +113,26 @@ function initGoogle() {
     callback: onGoogleCredential,
     auto_select: false,
   });
-  google.accounts.id.renderButton($("g-btn"), {
-    theme: "outline",
+  const box = $("g-btn");
+  const dark = matchMedia("(prefers-color-scheme: dark)").matches;
+  box.innerHTML = "";
+  google.accounts.id.renderButton(box, {
+    theme: dark ? "filled_black" : "outline",
     size: "large",
     text: "continue_with",
-    width: 320,
+    width: Math.min(400, Math.max(200, Math.floor(box.clientWidth))),
     locale: "id",
   });
 }
 initGoogle();
+
+// Render ulang saat ukuran/tema berubah
+let rt;
+let lastW = innerWidth;
+addEventListener("resize", () => {
+  if (innerWidth === lastW) return; // abaikan resize vertikal (address bar HP)
+  lastW = innerWidth;
+  clearTimeout(rt);
+  rt = setTimeout(initGoogle, 250);
+});
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", initGoogle);

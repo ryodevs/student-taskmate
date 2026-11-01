@@ -1,17 +1,14 @@
-import { $, PAGES, requireUser, roleOf, displayName, logout } from "./auth.js";
+import { PAGES, requireUser, roleOf } from "./auth.js";
 
-// Halaman placeholder: ganti dengan halaman utama aplikasimu
 const user = await requireUser();
 
 if (user) {
   const role = roleOf(user);
   if (!role) {
     location.replace(PAGES.role);
+  } else if (role === "pengurus") {
+    location.replace(PAGES.pengurus);
   } else {
-    $("hello").textContent = `Halo, ${displayName(user)}`;
-    $("role").textContent = role === "pengurus" ? "Peran: Pengurus" : "Peran: Anggota";
-    $("app").hidden = false;
+    location.replace(PAGES.anggota);
   }
 }
-
-$("logout").addEventListener("click", logout);

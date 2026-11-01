@@ -9,7 +9,13 @@ if (!URL || !KEY) {
 export const sb = createClient(URL, KEY);
 
 // Ganti NEXT ke halaman utama aplikasimu
-export const PAGES = { login: "/index.html", role: "/role.html", next: "/dashboard.html" };
+export const PAGES = {
+  login: "/index.html",
+  role: "/role.html",
+  next: "/dashboard.html",
+  pengurus: "/pengurus.html",
+  anggota: "/anggota.html",
+};
 
 export const $ = (id) => document.getElementById(id);
 

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard Pengurus — TaskMate</title>
+<link rel="stylesheet" href="/src/style.css">
+</head>
+<body>
+<main class="wide" id="app" hidden>
+  <header class="topbar">
+    <h1>TaskMate</h1>
+    <div class="topbar-right">
+      <span id="who" class="who-label"></span>
+      <button class="link" id="logout" type="button">Keluar</button>
+    </div>
+  </header>
+
+  <section class="section">
+    <h2>Kelas Kamu</h2>
+    <form id="create-class" class="inline-form">
+      <input id="class-name" type="text" placeholder="Nama kelas baru…" required>
+      <button class="primary" type="submit">Buat</button>
+    </form>
+    <p class="msg" id="class-msg" role="alert"></p>
+    <div id="class-list" class="card-list"></div>
+  </section>
+
+  <section class="section" id="task-section" hidden>
+    <div class="section-header">
+      <h2>Tugas — <span id="active-class-name"></span></h2>
+      <span class="badge" id="active-class-code"></span>
+    </div>
+    <form id="add-task" class="task-form">
+      <input id="task-title" type="text" placeholder="Judul tugas…" required>
+      <input id="task-desc" type="text" placeholder="Deskripsi (opsional)">
+      <input id="task-deadline" type="datetime-local">
+      <button class="primary" type="submit">Tambah</button>
+    </form>
+    <p class="msg" id="task-msg" role="alert"></p>
+    <div id="task-list" class="task-list"></div>
+    <p class="empty" id="task-empty" hidden>Belum ada tugas.</p>
+  </section>
+</main>
+<script type="module" src="/src/pengurus.js"></script>
+</body>
+</html>

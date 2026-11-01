@@ -3,118 +3,29 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Masuk ke TaskMate</title>
+<title>Masuk</title>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
-<style>
-  :root {
-    --bg: #eef1f7;
-    --panel: #ffffff;
-    --ink: #14213d;
-    --muted: #5b6785;
-    --line: #d3d9e8;
-    --accent: #2b4bff;
-    --accent-ink: #ffffff;
-    --err: #b3261e;
-    --ok: #1b7a3d;
-    color-scheme: light;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #0f1526;
-      --panel: #172038;
-      --ink: #e8ecf8;
-      --muted: #9aa5c4;
-      --line: #2a3556;
-      --accent: #6f86ff;
-      --accent-ink: #0f1526;
-      --err: #ff8a80;
-      --ok: #7ddc9b;
-      color-scheme: dark;
-    }
-  }
-  * { box-sizing: border-box; }
-  html, body { height: 100%; }
-  body {
-    margin: 0; background: var(--bg); color: var(--ink);
-    font-family: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
-    display: grid; grid-template-columns: minmax(0, 1fr); place-items: center; padding: 20px;
-  }
-  main {
-    width: 100%; max-width: 400px; min-width: 0; margin: 0 auto; background: var(--panel);
-    border: 1px solid var(--line); border-radius: 14px; padding: 32px 28px;
-  }
-  h1 { font-size: 1.6rem; margin: 0 0 6px; letter-spacing: -0.01em; }
-  p.sub { margin: 0 0 24px; color: var(--muted); line-height: 1.5; }
-  .divider {
-    display: flex; align-items: center; gap: 12px;
-    margin: 22px 0; color: var(--muted); font-size: .875rem;
-  }
-  .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: var(--line); }
-  label { display: block; font-size: .875rem; font-weight: 600; margin: 0 0 6px; }
-  input {
-    width: 100%; padding: 11px 12px; margin-bottom: 14px;
-    border: 1px solid var(--line); border-radius: 8px;
-    background: transparent; color: inherit; font: inherit;
-  }
-  input:focus-visible, button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
-  button {
-    width: 100%; padding: 12px; border-radius: 8px; font: inherit; cursor: pointer;
-    display: flex; align-items: center; justify-content: center; gap: 10px;
-  }
-  button:disabled { opacity: .55; cursor: not-allowed; }
-  .primary { border: 0; background: var(--accent); color: var(--accent-ink); font-weight: 600; }
-  .outline { border: 1px solid var(--line); background: transparent; color: inherit; font-weight: 600; }
-  .link {
-    border: 0; background: none; color: var(--accent); width: auto;
-    padding: 6px 2px; margin: 10px auto 0; font-size: .9rem;
-  }
-  .msg { min-height: 1.2em; margin: 12px 0 0; font-size: .875rem; color: var(--err); }
-  .msg.ok { color: var(--ok); }
-  .profile { text-align: center; }
-  .profile img {
-    width: 84px; height: 84px; border-radius: 50%; object-fit: cover;
-    border: 1px solid var(--line); margin-bottom: 14px;
-  }
-  .profile h2 { margin: 0 0 4px; font-size: 1.3rem; }
-  .profile p { margin: 0 0 18px; color: var(--muted); word-break: break-word; }
-  /* color-scheme: light mencegah iframe Google dapat latar putih di dark mode */
-  #g-btn { display: flex; justify-content: center; min-height: 44px; overflow: hidden; color-scheme: light; }
-  [hidden] { display: none !important; }
-  @media (prefers-reduced-motion: no-preference) {
-    button { transition: opacity .15s; }
-    button:not(:disabled):hover { opacity: .88; }
-  }
-</style>
+<link rel="stylesheet" href="/src/style.css">
 </head>
 <body>
 <main>
-  <section id="login-view">
-    <h1 id="title">Masuk ke akun</h1>
-    <p class="sub">Pakai akun Google atau email kamu.</p>
+  <h1 id="title">Masuk ke akun</h1>
+  <p class="sub">Pakai akun Google atau email kamu.</p>
 
-    <div id="g-btn"></div>
+  <div id="g-btn"></div>
 
-    <div class="divider">atau</div>
+  <div class="divider">atau</div>
 
-    <form id="email-form" novalidate>
-      <label for="email">Email</label>
-      <input id="email" type="email" autocomplete="email" required>
-      <label for="password">Kata sandi</label>
-      <input id="password" type="password" autocomplete="current-password" required minlength="6">
-      <button class="primary" id="submit" type="submit">Masuk</button>
-    </form>
-    <button class="link" id="toggle" type="button">Belum punya akun? Daftar</button>
-    <p class="msg" id="msg" role="alert"></p>
-  </section>
-
-  <section id="profile-view" class="profile" hidden>
-    <img id="avatar" alt="Foto profil" referrerpolicy="no-referrer">
-    <h2 id="name"></h2>
-    <p id="mail"></p>
-    <button class="outline" id="logout" type="button">Keluar</button>
-  </section>
+  <form id="email-form" novalidate>
+    <label for="email">Email</label>
+    <input id="email" type="email" autocomplete="email" required>
+    <label for="password">Kata sandi</label>
+    <input id="password" type="password" autocomplete="current-password" required minlength="6">
+    <button class="primary" id="submit" type="submit">Masuk</button>
+  </form>
+  <button class="link" id="toggle" type="button">Belum punya akun? Daftar</button>
+  <p class="msg" id="msg" role="alert"></p>
 </main>
-
-<script type="module" src="/src/main.js"></script>
+<script type="module" src="/src/login.js"></script>
 </body>
 </html>

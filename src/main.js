@@ -7,6 +7,8 @@ if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
   throw new Error("VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY belum diisi di .env");
 }
 
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+
 const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const $ = (id) => document.getElementById(id);
@@ -37,18 +39,6 @@ function authError(err) {
   if (/rate limit/i.test(t)) return "Terlalu banyak percobaan. Coba lagi nanti.";
   return t || "Terjadi kesalahan. Coba lagi.";
 }
-
-$("google").addEventListener("click", async () => {
-  say("");
-  const { error } = await sb.auth.signInWithOAuth({
-    provider: "google",
-    options: {
-      redirectTo: location.origin + location.pathname,
-      queryParams: { prompt: "select_account" },
-    },
-  });
-  if (error) say(authError(error));
-});
 
 $("email-form").addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -90,9 +80,45 @@ $("toggle").addEventListener("click", () => {
 });
 
 $("logout").addEventListener("click", async () => {
+  window.google?.accounts?.id.disableAutoSelect();
   await sb.auth.signOut();
 });
 
 // Satu sumber kebenaran: state sesi dari Supabase
 sb.auth.onAuthStateChange((_event, session) => render(session));
 sb.auth.getSession().then(({ data }) => render(data.session));
+
+
+// Login Google tanpa redirect ke *.supabase.co
+async function onGoogleCredential(res) {
+  say("");
+  const { error } = await sb.auth.signInWithIdToken({
+    provider: "google",
+    token: res.credential,
+  });
+  if (error) say(authError(error));
+}
+
+let tries = 0;
+function initGoogle() {
+  if (!GOOGLE_CLIENT_ID) {
+    return say("VITE_GOOGLE_CLIENT_ID belum diisi di .env (lalu restart npm run dev).");
+  }
+  if (!window.google?.accounts) {
+    if (++tries > 40) return say("Script Google gagal dimuat. Cek koneksi/adblock.");
+    return setTimeout(initGoogle, 150);
+  }
+  google.accounts.id.initialize({
+    client_id: GOOGLE_CLIENT_ID,
+    callback: onGoogleCredential,
+    auto_select: false,
+  });
+  google.accounts.id.renderButton($("g-btn"), {
+    theme: "outline",
+    size: "large",
+    text: "continue_with",
+    width: 320,
+    locale: "id",
+  });
+}
+initGoogle();

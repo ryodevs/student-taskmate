@@ -149,9 +149,11 @@ function renderTasks() {
   list.innerHTML = "";
   $("task-empty").hidden = allTasks.length > 0 || tasks.length > 0;
 
-  tasks.forEach((t) => {
+  tasks.forEach((t, i) => {
     const done = doneSet.has(t.id);
     const div = document.createElement("div");
+    div.dataset.id = t.id;
+    div.style.setProperty("--i", Math.min(i, 8));
     div.className = "task-item" + (done ? " done" : "") + (deadlineClass(t) ? " " + deadlineClass(t) : "");
     const dl = t.deadline ? new Date(t.deadline).toLocaleString("id-ID", { dateStyle: "medium", timeStyle: "short" }) : "";
     div.innerHTML = `
@@ -184,8 +186,14 @@ async function toggleTask(taskId, checked) {
     await sb.from("task_completions").delete().eq("task_id", taskId).eq("user_id", user.id);
     doneSet.delete(taskId);
   }
+  const item = $("task-list").querySelector(`.task-item[data-id="${taskId}"]`);
+  if (item && currentFilter === "all") {
+    item.classList.toggle("done", checked);
+  } else {
+    renderTasks();
+  }
   renderStats();
-  renderTasks();
+  renderOverdue();
 }
 
 function renderOverdue() {

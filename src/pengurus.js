@@ -144,8 +144,9 @@ function renderTasks(tasks, classId) {
   list.innerHTML = "";
   $("task-empty").hidden = tasks.length > 0;
 
-  tasks.forEach((t) => {
+  tasks.forEach((t, i) => {
     const div = document.createElement("div");
+    div.style.setProperty("--i", Math.min(i, 8));
     div.className = "task-item" + (deadlineClass(t) ? " " + deadlineClass(t) : "");
     const dl = t.deadline ? new Date(t.deadline).toLocaleString("id-ID", { dateStyle: "medium", timeStyle: "short" }) : "";
     const dlLocal = t.deadline ? toLocalInput(t.deadline) : "";

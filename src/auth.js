@@ -38,6 +38,18 @@ export function displayName(user) {
   return m.full_name || m.name || user?.email || "Pengguna";
 }
 
+export function greeting(user) {
+  const h = new Date().getHours();
+  const waktu = h < 11 ? "pagi" : h < 15 ? "siang" : h < 18 ? "sore" : "malam";
+  return `Selamat ${waktu}, ${displayName(user)}!`;
+}
+
+export function esc(s) {
+  const d = document.createElement("div");
+  d.textContent = s;
+  return d.innerHTML;
+}
+
 export async function logout() {
   window.google?.accounts?.id.disableAutoSelect();
   await sb.auth.signOut();

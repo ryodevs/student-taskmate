@@ -253,7 +253,111 @@ body.page-dashboard main {
 
 .msg.dashboard-msg { margin: 0 0 12px; }
 
-/* ===== Legacy compat (unused but keep for dashboard.html redirect page) ===== */
+/* ===== Stats row ===== */
+.stats-row {
+  display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 24px;
+}
+.stat-card {
+  flex: 1; min-width: 120px; padding: 16px 18px;
+  background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+  display: flex; flex-direction: column; gap: 2px;
+}
+.stat-value { font-size: 1.5rem; font-weight: 700; }
+.stat-label { font-size: .78rem; color: var(--muted); font-weight: 500; }
+
+/* ===== Class code banner ===== */
+.class-code-banner {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 10px 16px; margin-bottom: 24px;
+  background: var(--accent-soft); border: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);
+  border-radius: var(--radius); font-size: .85rem;
+}
+.class-code-banner code {
+  font-family: monospace; font-weight: 700; font-size: .95rem;
+  color: var(--accent); letter-spacing: .05em;
+}
+
+/* ===== Progress bar ===== */
+.progress-wrap { margin-bottom: 24px; }
+.progress-label { font-size: .85rem; color: var(--muted); margin-bottom: 8px; }
+.progress-bar {
+  height: 10px; background: var(--line); border-radius: 5px; overflow: hidden;
+}
+.progress-fill {
+  height: 100%; background: var(--ok); border-radius: 5px;
+  transition: width .4s ease;
+}
+
+/* ===== Filter tabs ===== */
+.filter-tabs {
+  display: flex; gap: 6px; margin-bottom: 20px; flex-wrap: wrap;
+}
+.filter-tab {
+  width: auto; padding: 8px 18px; border-radius: 20px;
+  font-size: .82rem; font-weight: 600; cursor: pointer;
+  border: 1px solid var(--line); background: transparent; color: var(--muted);
+  transition: all .15s;
+}
+.filter-tab:hover { border-color: var(--accent); color: var(--ink); }
+.filter-tab.active {
+  background: var(--accent); color: var(--accent-ink); border-color: var(--accent);
+}
+
+/* ===== Overdue badge ===== */
+.overdue-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 14px; margin-bottom: 16px;
+  background: color-mix(in srgb, var(--err) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--err) 25%, transparent);
+  border-radius: var(--radius); font-size: .82rem; font-weight: 600; color: var(--err);
+}
+
+/* ===== Deadline highlight ===== */
+.task-item.deadline-soon { border-color: #e6a700; }
+.task-item.deadline-soon .deadline { color: #c99200; font-weight: 600; }
+.task-item.deadline-passed { border-color: var(--err); }
+.task-item.deadline-passed .deadline { color: var(--err); font-weight: 600; }
+
+/* ===== Priority badge ===== */
+.priority-badge {
+  display: inline-block; padding: 2px 8px; border-radius: 4px;
+  font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .03em;
+  margin-top: 4px;
+}
+.priority-badge.tinggi { background: color-mix(in srgb, var(--err) 12%, transparent); color: var(--err); }
+.priority-badge.sedang { background: color-mix(in srgb, #e6a700 12%, transparent); color: #c99200; }
+.priority-badge.rendah { background: color-mix(in srgb, var(--ok) 12%, transparent); color: var(--ok); }
+
+/* ===== Priority select in task form ===== */
+.task-form select {
+  padding: 11px 14px; border: 1px solid var(--line); border-radius: var(--radius);
+  background: transparent; color: inherit; font: inherit; font-size: .9rem;
+  cursor: pointer; min-width: 120px;
+}
+.task-form select:focus-visible { border-color: var(--accent); outline: 3px solid rgba(79,110,247,.2); outline-offset: 0; }
+
+/* ===== Inline edit ===== */
+.task-item.editing {
+  border-color: var(--accent); box-shadow: 0 2px 12px rgba(79,110,247,.12);
+  flex-wrap: wrap;
+}
+.inline-edit-form { display: flex; flex-direction: column; gap: 8px; width: 100%; }
+.inline-edit-form input, .inline-edit-form select {
+  padding: 8px 12px; border: 1px solid var(--line); border-radius: 8px;
+  background: transparent; color: inherit; font: inherit; font-size: .88rem;
+  margin-bottom: 0;
+}
+.inline-edit-form select { cursor: pointer; }
+.inline-edit-actions {
+  display: flex; gap: 8px; justify-content: flex-end;
+}
+.inline-edit-actions button {
+  width: auto; padding: 8px 18px; font-size: .82rem; border-radius: 8px;
+}
+.btn-save { background: var(--accent); color: var(--accent-ink); font-weight: 600; border: none; }
+.btn-cancel { background: none; border: 1px solid var(--line); color: var(--muted); font-weight: 600; }
+
+/* ===== Legacy compat (dashboard.html redirect page) ===== */
 .topbar {
   display: flex; align-items: center; justify-content: space-between;
   margin: -36px -32px 24px; padding: 16px 32px;

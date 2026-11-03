@@ -50,16 +50,38 @@
 
 <!-- Dashboard: tugas full-width -->
 <main id="app" hidden>
-  <h2 class="page-title" id="active-class-name"></h2>
+  <h2 class="page-title" id="greeting"></h2>
   <p class="page-subtitle">Kelola tugas untuk anggota kelas kamu.</p>
+
+  <div class="class-code-banner" hidden id="class-code-banner">
+    <span>Kode kelas:</span>
+    <code id="class-code-value"></code>
+  </div>
+
+  <div class="stats-row" id="stats-row">
+    <div class="stat-card">
+      <span class="stat-value" id="stat-tasks">0</span>
+      <span class="stat-label">Total tugas</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-value" id="stat-members">0</span>
+      <span class="stat-label">Anggota</span>
+    </div>
+  </div>
 
   <form id="add-task" class="task-form">
     <input id="task-title" type="text" placeholder="Judul tugas…" required>
     <input id="task-desc" type="text" placeholder="Deskripsi (opsional)">
     <input id="task-deadline" type="datetime-local">
+    <select id="task-priority" aria-label="Prioritas">
+      <option value="tinggi">Prioritas Tinggi</option>
+      <option value="sedang" selected>Prioritas Sedang</option>
+      <option value="rendah">Prioritas Rendah</option>
+    </select>
     <button class="primary" type="submit">Tambah</button>
   </form>
   <p class="msg dashboard-msg" id="task-msg" role="alert"></p>
+  <div id="overdue-banner" hidden></div>
   <div id="task-list" class="task-list"></div>
   <p class="empty" id="task-empty" hidden>Belum ada tugas. Tambah tugas pertamamu!</p>
 </main>

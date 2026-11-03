@@ -28,8 +28,13 @@ create table if not exists tasks (
   title text not null,
   description text default '',
   deadline timestamptz,
+  priority text not null default 'sedang' check (priority in ('tinggi', 'sedang', 'rendah')),
   created_at timestamptz not null default now()
 );
+
+-- Migrasi: jalankan ini kalau tabel tasks sudah ada
+-- alter table tasks add column if not exists priority text not null default 'sedang'
+--   check (priority in ('tinggi', 'sedang', 'rendah'));
 
 -- 4. Tabel checklist tugas (per anggota)
 create table if not exists task_completions (

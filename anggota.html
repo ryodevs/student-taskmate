@@ -49,10 +49,35 @@
 
 <!-- Dashboard: tugas full-width -->
 <main id="app" hidden>
-  <h2 class="page-title" id="active-class-name"></h2>
+  <h2 class="page-title" id="greeting"></h2>
   <p class="page-subtitle">Checklist tugas yang sudah kamu selesaikan.</p>
 
+  <div class="stats-row" id="stats-row">
+    <div class="stat-card">
+      <span class="stat-value" id="stat-total">0</span>
+      <span class="stat-label">Tugas</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-value" id="stat-done">0</span>
+      <span class="stat-label">Selesai</span>
+    </div>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-label" id="progress-label"></div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+    </div>
+  </div>
+
+  <div class="filter-tabs" id="filter-tabs">
+    <button class="filter-tab" data-filter="all" type="button">Semua</button>
+    <button class="filter-tab" data-filter="undone" type="button">Belum selesai</button>
+    <button class="filter-tab" data-filter="done" type="button">Selesai</button>
+  </div>
+
   <p class="msg dashboard-msg" id="task-msg" role="alert"></p>
+  <div id="overdue-banner" hidden></div>
   <div id="task-list" class="task-list"></div>
   <p class="empty" id="task-empty" hidden>Belum ada tugas dari pengurus.</p>
 </main>

@@ -1,45 +1,93 @@
-import { sb, $, PAGES, requireUser, displayName, logout } from "./auth.js";
+import { sb, $, requireUser, displayName, logout } from "./auth.js";
 
 const user = await requireUser();
 if (!user) throw new Error("not logged in");
 
-$("who").textContent = displayName(user);
-$("app").hidden = false;
+function esc(s) {
+  const d = document.createElement("div");
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+function initSidebar() {
+  $("sidebar-name").textContent = displayName(user);
+  $("sidebar-email").textContent = user.email || "";
+
+  $("menu-btn").addEventListener("click", () => $("sidebar-backdrop").classList.add("open"));
+  $("sidebar-close").addEventListener("click", closeSidebar);
+  $("sidebar-backdrop").addEventListener("click", (e) => {
+    if (e.target === $("sidebar-backdrop")) closeSidebar();
+  });
+  $("logout").addEventListener("click", logout);
+}
+
+function closeSidebar() {
+  $("sidebar-backdrop").classList.remove("open");
+}
+
+function showClass(c) {
+  $("active-class-name").textContent = c.name;
+  $("navbar-class").textContent = c.name;
+  $("sidebar-class-info").hidden = false;
+  $("sidebar-class-name").textContent = c.name;
+}
 
 let activeClassId = null;
 
-async function loadClasses() {
+async function init() {
+  initSidebar();
+
   const { data, error } = await sb
     .from("class_members")
     .select("class_id, classes(id, name, code)")
-    .eq("user_id", user.id);
+    .eq("user_id", user.id)
+    .limit(1);
 
-  if (error) { $("class-msg").textContent = "Gagal memuat kelas."; return; }
-
-  const list = $("class-list");
-  list.innerHTML = "";
+  if (error) return;
 
   if (!data.length) {
-    list.innerHTML = '<p class="empty">Belum gabung kelas. Masukkan kode kelas!</p>';
+    $("setup").hidden = false;
+    $("join-class").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const code = $("class-code").value.trim().toLowerCase();
+      if (!code) return;
+      $("class-msg").textContent = "";
+
+      const { data: cls, error: findErr } = await sb
+        .from("classes")
+        .select("id, name, code")
+        .eq("code", code)
+        .maybeSingle();
+
+      if (findErr || !cls) {
+        $("class-msg").textContent = "Kode kelas tidak ditemukan.";
+        return;
+      }
+
+      const { error: joinErr } = await sb
+        .from("class_members")
+        .insert({ class_id: cls.id, user_id: user.id });
+
+      if (joinErr) {
+        $("class-msg").textContent = /duplicate/i.test(joinErr.message || "")
+          ? "Kamu sudah tergabung di kelas ini."
+          : "Gagal bergabung ke kelas.";
+        return;
+      }
+
+      $("setup").hidden = true;
+      openClass(cls);
+    });
     return;
   }
 
-  data.forEach((row) => {
-    const c = row.classes;
-    const card = document.createElement("button");
-    card.type = "button";
-    card.className = "card" + (c.id === activeClassId ? " active" : "");
-    card.innerHTML = `<strong>${esc(c.name)}</strong>`;
-    card.addEventListener("click", () => openClass(c));
-    list.appendChild(card);
-  });
+  openClass(data[0].classes);
 }
 
-async function openClass(c) {
+function openClass(c) {
   activeClassId = c.id;
-  $("active-class-name").textContent = c.name;
-  $("task-section").hidden = false;
-  loadClasses();
+  showClass(c);
+  $("app").hidden = false;
   loadTasks(c.id);
 }
 
@@ -50,7 +98,7 @@ async function loadTasks(classId) {
     .eq("class_id", classId)
     .order("created_at", { ascending: false });
 
-  if (error) { $("task-list").innerHTML = '<p class="empty">Gagal memuat tugas.</p>'; return; }
+  if (error) { $("task-msg").textContent = "Gagal memuat tugas."; return; }
 
   const { data: completions } = await sb
     .from("task_completions")
@@ -91,46 +139,4 @@ async function toggleTask(taskId, checked) {
   loadTasks(activeClassId);
 }
 
-$("join-class").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const code = $("class-code").value.trim().toLowerCase();
-  if (!code) return;
-  $("class-msg").textContent = "";
-
-  const { data: cls, error: findErr } = await sb
-    .from("classes")
-    .select("id")
-    .eq("code", code)
-    .maybeSingle();
-
-  if (findErr || !cls) {
-    $("class-msg").textContent = "Kode kelas tidak ditemukan.";
-    return;
-  }
-
-  const { error: joinErr } = await sb
-    .from("class_members")
-    .insert({ class_id: cls.id, user_id: user.id });
-
-  if (joinErr) {
-    if (/duplicate/i.test(joinErr.message || "")) {
-      $("class-msg").textContent = "Kamu sudah tergabung di kelas ini.";
-    } else {
-      $("class-msg").textContent = "Gagal bergabung ke kelas.";
-    }
-    return;
-  }
-
-  $("class-code").value = "";
-  loadClasses();
-});
-
-$("logout").addEventListener("click", logout);
-
-function esc(s) {
-  const d = document.createElement("div");
-  d.textContent = s;
-  return d.innerHTML;
-}
-
-loadClasses();
+init();

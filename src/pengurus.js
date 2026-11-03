@@ -1,47 +1,100 @@
-import { sb, $, PAGES, requireUser, displayName, logout } from "./auth.js";
+import { sb, $, requireUser, displayName, logout } from "./auth.js";
 
 const user = await requireUser();
 if (!user) throw new Error("not logged in");
 
-$("who").textContent = displayName(user);
-$("app").hidden = false;
+function esc(s) {
+  const d = document.createElement("div");
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+function initSidebar() {
+  $("sidebar-name").textContent = displayName(user);
+  $("sidebar-email").textContent = user.email || "";
+
+  $("menu-btn").addEventListener("click", () => $("sidebar-backdrop").classList.add("open"));
+  $("sidebar-close").addEventListener("click", closeSidebar);
+  $("sidebar-backdrop").addEventListener("click", (e) => {
+    if (e.target === $("sidebar-backdrop")) closeSidebar();
+  });
+  $("logout").addEventListener("click", logout);
+}
+
+function closeSidebar() {
+  $("sidebar-backdrop").classList.remove("open");
+}
+
+function showClass(c) {
+  $("active-class-name").textContent = c.name;
+  $("navbar-class").textContent = c.name;
+  $("sidebar-class-info").hidden = false;
+  $("sidebar-class-name").textContent = c.name;
+  $("sidebar-class-code").textContent = "Kode: " + c.code;
+}
 
 let activeClassId = null;
 
-async function loadClasses() {
+async function init() {
+  initSidebar();
+
   const { data, error } = await sb
     .from("classes")
     .select("*")
     .eq("created_by", user.id)
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: true })
+    .limit(1);
 
-  if (error) { $("class-msg").textContent = "Gagal memuat kelas."; return; }
-
-  const list = $("class-list");
-  list.innerHTML = "";
+  if (error) return;
 
   if (!data.length) {
-    list.innerHTML = '<p class="empty">Belum ada kelas. Buat kelas pertamamu!</p>';
+    $("setup").hidden = false;
+    $("create-class").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const name = $("class-name").value.trim();
+      if (!name) return;
+      $("class-msg").textContent = "";
+
+      const { data: created, error: err } = await sb
+        .from("classes")
+        .insert({ name, created_by: user.id })
+        .select()
+        .single();
+
+      if (err) { $("class-msg").textContent = "Gagal membuat kelas."; return; }
+      $("setup").hidden = true;
+      openClass(created);
+    });
     return;
   }
 
-  data.forEach((c) => {
-    const card = document.createElement("button");
-    card.type = "button";
-    card.className = "card" + (c.id === activeClassId ? " active" : "");
-    card.innerHTML = `<strong>${esc(c.name)}</strong><span class="badge">Kode: ${esc(c.code)}</span>`;
-    card.addEventListener("click", () => openClass(c));
-    list.appendChild(card);
-  });
+  openClass(data[0]);
 }
 
-async function openClass(c) {
+function openClass(c) {
   activeClassId = c.id;
-  $("active-class-name").textContent = c.name;
-  $("active-class-code").textContent = "Kode: " + c.code;
-  $("task-section").hidden = false;
-  loadClasses();
+  showClass(c);
+  $("app").hidden = false;
   loadTasks(c.id);
+
+  $("add-task").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (!activeClassId) return;
+    const title = $("task-title").value.trim();
+    if (!title) return;
+    $("task-msg").textContent = "";
+
+    const row = { class_id: activeClassId, title, description: $("task-desc").value.trim() || "" };
+    const dl = $("task-deadline").value;
+    if (dl) row.deadline = new Date(dl).toISOString();
+
+    const { error } = await sb.from("tasks").insert(row);
+    if (error) { $("task-msg").textContent = "Gagal menambah tugas."; return; }
+    $("task-title").value = "";
+    $("task-desc").value = "";
+    $("task-deadline").value = "";
+    loadTasks(activeClassId);
+  });
 }
 
 async function loadTasks(classId) {
@@ -67,7 +120,7 @@ async function loadTasks(classId) {
         ${t.description ? `<p>${esc(t.description)}</p>` : ""}
         ${dl ? `<small class="deadline">Deadline: ${dl}</small>` : ""}
       </div>
-      <button class="delete-btn" data-id="${t.id}" title="Hapus">✕</button>`;
+      <button class="delete-btn" title="Hapus">✕</button>`;
     div.querySelector(".delete-btn").addEventListener("click", () => deleteTask(t.id));
     list.appendChild(div);
   });
@@ -79,43 +132,4 @@ async function deleteTask(id) {
   loadTasks(activeClassId);
 }
 
-$("create-class").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const name = $("class-name").value.trim();
-  if (!name) return;
-  $("class-msg").textContent = "";
-
-  const { error } = await sb.from("classes").insert({ name, created_by: user.id });
-  if (error) { $("class-msg").textContent = "Gagal membuat kelas."; return; }
-  $("class-name").value = "";
-  loadClasses();
-});
-
-$("add-task").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  if (!activeClassId) return;
-  const title = $("task-title").value.trim();
-  if (!title) return;
-  $("task-msg").textContent = "";
-
-  const row = { class_id: activeClassId, title, description: $("task-desc").value.trim() || "" };
-  const dl = $("task-deadline").value;
-  if (dl) row.deadline = new Date(dl).toISOString();
-
-  const { error } = await sb.from("tasks").insert(row);
-  if (error) { $("task-msg").textContent = "Gagal menambah tugas."; return; }
-  $("task-title").value = "";
-  $("task-desc").value = "";
-  $("task-deadline").value = "";
-  loadTasks(activeClassId);
-});
-
-$("logout").addEventListener("click", logout);
-
-function esc(s) {
-  const d = document.createElement("div");
-  d.textContent = s;
-  return d.innerHTML;
-}
-
-loadClasses();
+init();

@@ -6,34 +6,57 @@
 <title>Dashboard Anggota — TaskMate</title>
 <link rel="stylesheet" href="/src/style.css">
 </head>
-<body>
-<main class="wide" id="app" hidden>
-  <header class="topbar">
-    <h1>TaskMate</h1>
-    <div class="topbar-right">
-      <span id="who" class="who-label"></span>
-      <button class="link" id="logout" type="button">Keluar</button>
-    </div>
-  </header>
+<body class="page-dashboard">
 
-  <section class="section">
-    <h2>Kelas Kamu</h2>
-    <form id="join-class" class="inline-form">
-      <input id="class-code" type="text" placeholder="Masukkan kode kelas…" required maxlength="6">
+<nav class="navbar">
+  <button class="hamburger" id="menu-btn" type="button" aria-label="Menu">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
+  <span class="navbar-title">TaskMate</span>
+  <span class="navbar-class" id="navbar-class"></span>
+</nav>
+
+<div class="sidebar-backdrop" id="sidebar-backdrop">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <span class="sidebar-name" id="sidebar-name"></span>
+      <button class="sidebar-close" id="sidebar-close" type="button" aria-label="Tutup">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <span class="sidebar-email" id="sidebar-email"></span>
+    <div class="sidebar-class-info" id="sidebar-class-info" hidden>
+      <span class="sidebar-class-label">Kelas</span>
+      <span class="sidebar-class-name" id="sidebar-class-name"></span>
+    </div>
+    <div class="sidebar-spacer"></div>
+    <button class="sidebar-logout" id="logout" type="button">Keluar</button>
+  </aside>
+</div>
+
+<!-- Setup: join kelas pertama kali -->
+<div id="setup" hidden>
+  <div class="setup-card">
+    <h2>Gabung Kelas</h2>
+    <p>Masukkan kode kelas dari pengurus untuk mulai melihat tugas.</p>
+    <form id="join-class">
+      <input id="class-code" type="text" placeholder="Kode kelas…" required maxlength="6">
       <button class="primary" type="submit">Gabung</button>
     </form>
     <p class="msg" id="class-msg" role="alert"></p>
-    <div id="class-list" class="card-list"></div>
-  </section>
+  </div>
+</div>
 
-  <section class="section" id="task-section" hidden>
-    <div class="section-header">
-      <h2>Tugas — <span id="active-class-name"></span></h2>
-    </div>
-    <div id="task-list" class="task-list"></div>
-    <p class="empty" id="task-empty" hidden>Belum ada tugas.</p>
-  </section>
+<!-- Dashboard: tugas full-width -->
+<main id="app" hidden>
+  <h2 class="page-title" id="active-class-name"></h2>
+  <p class="page-subtitle">Checklist tugas yang sudah kamu selesaikan.</p>
+
+  <p class="msg dashboard-msg" id="task-msg" role="alert"></p>
+  <div id="task-list" class="task-list"></div>
+  <p class="empty" id="task-empty" hidden>Belum ada tugas dari pengurus.</p>
 </main>
+
 <script type="module" src="/src/anggota.js"></script>
 </body>
 </html>

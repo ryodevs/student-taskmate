@@ -6,42 +6,64 @@
 <title>Dashboard Pengurus — TaskMate</title>
 <link rel="stylesheet" href="/src/style.css">
 </head>
-<body>
-<main class="wide" id="app" hidden>
-  <header class="topbar">
-    <h1>TaskMate</h1>
-    <div class="topbar-right">
-      <span id="who" class="who-label"></span>
-      <button class="link" id="logout" type="button">Keluar</button>
-    </div>
-  </header>
+<body class="page-dashboard">
 
-  <section class="section">
-    <h2>Kelas Kamu</h2>
-    <form id="create-class" class="inline-form">
-      <input id="class-name" type="text" placeholder="Nama kelas baru…" required>
+<nav class="navbar">
+  <button class="hamburger" id="menu-btn" type="button" aria-label="Menu">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
+  <span class="navbar-title">TaskMate</span>
+  <span class="navbar-class" id="navbar-class"></span>
+</nav>
+
+<div class="sidebar-backdrop" id="sidebar-backdrop">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <span class="sidebar-name" id="sidebar-name"></span>
+      <button class="sidebar-close" id="sidebar-close" type="button" aria-label="Tutup">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <span class="sidebar-email" id="sidebar-email"></span>
+    <div class="sidebar-class-info" id="sidebar-class-info" hidden>
+      <span class="sidebar-class-label">Kelas</span>
+      <span class="sidebar-class-name" id="sidebar-class-name"></span>
+      <span class="sidebar-class-code" id="sidebar-class-code"></span>
+    </div>
+    <div class="sidebar-spacer"></div>
+    <button class="sidebar-logout" id="logout" type="button">Keluar</button>
+  </aside>
+</div>
+
+<!-- Setup: buat kelas pertama kali -->
+<div id="setup" hidden>
+  <div class="setup-card">
+    <h2>Buat Kelas</h2>
+    <p>Buat kelas pertamamu untuk mulai mengelola tugas.</p>
+    <form id="create-class">
+      <input id="class-name" type="text" placeholder="Nama kelas…" required>
       <button class="primary" type="submit">Buat</button>
     </form>
     <p class="msg" id="class-msg" role="alert"></p>
-    <div id="class-list" class="card-list"></div>
-  </section>
+  </div>
+</div>
 
-  <section class="section" id="task-section" hidden>
-    <div class="section-header">
-      <h2>Tugas — <span id="active-class-name"></span></h2>
-      <span class="badge" id="active-class-code"></span>
-    </div>
-    <form id="add-task" class="task-form">
-      <input id="task-title" type="text" placeholder="Judul tugas…" required>
-      <input id="task-desc" type="text" placeholder="Deskripsi (opsional)">
-      <input id="task-deadline" type="datetime-local">
-      <button class="primary" type="submit">Tambah</button>
-    </form>
-    <p class="msg" id="task-msg" role="alert"></p>
-    <div id="task-list" class="task-list"></div>
-    <p class="empty" id="task-empty" hidden>Belum ada tugas.</p>
-  </section>
+<!-- Dashboard: tugas full-width -->
+<main id="app" hidden>
+  <h2 class="page-title" id="active-class-name"></h2>
+  <p class="page-subtitle">Kelola tugas untuk anggota kelas kamu.</p>
+
+  <form id="add-task" class="task-form">
+    <input id="task-title" type="text" placeholder="Judul tugas…" required>
+    <input id="task-desc" type="text" placeholder="Deskripsi (opsional)">
+    <input id="task-deadline" type="datetime-local">
+    <button class="primary" type="submit">Tambah</button>
+  </form>
+  <p class="msg dashboard-msg" id="task-msg" role="alert"></p>
+  <div id="task-list" class="task-list"></div>
+  <p class="empty" id="task-empty" hidden>Belum ada tugas. Tambah tugas pertamamu!</p>
 </main>
+
 <script type="module" src="/src/pengurus.js"></script>
 </body>
 </html>
